@@ -1,66 +1,143 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Database Schema - Sàn B2B Marketplace
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Tổng quan
 
-## About Laravel
+Schema được thiết kế cho hệ thống sàn B2B marketplace với 3 bảng chính: `vendors`, `products`, và `rfqs`.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Cấu trúc Database
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### 1. Bảng `vendors` (Nhà bán)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Các trường:**
+- `id`: Primary key tự động tăng
+- `name`: Tên nhà bán (VARCHAR 255)
+- `email`: Email duy nhất (UNIQUE constraint)
+- `status`: Trạng thái (active/inactive/suspended)
+- `verified`: Đã xác thực hay chưa (BOOLEAN)
+- `created_at`, `updated_at`: Timestamps tự động
 
-## Learning Laravel
+**Indexes:**
+- `idx_vendor_status`: Tối ưu truy vấn theo trạng thái
+- `idx_vendor_verified`: Tối ưu lọc nhà bán đã xác thực
+- `email`: Unique index tự động từ `->unique()` (hỗ trợ tìm kiếm và đảm bảo tính duy nhất)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Lý do thiết kế:**
+- Email UNIQUE đảm bảo mỗi nhà bán chỉ có một tài khoản
+- Status ENUM giúp quản lý trạng thái nhà bán dễ dàng
+- Verified flag cho phép phân biệt nhà bán đã được xác thực
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### 2. Bảng `products` (Sản phẩm)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Các trường:**
+- `id`: Primary key tự động tăng
+- `name`: Tên sản phẩm
+- `brand`: Thương hiệu
+- `price`: Giá (DECIMAL 15,2 để hỗ trợ giá trị lớn)
+- `specs`: Thông số kỹ thuật (JSON - linh hoạt cho nhiều loại sản phẩm)
+- `status`: Trạng thái (active/inactive/out_of_stock)
+- `vendor_id`: Foreign key đến bảng vendors (ON DELETE SET NULL)
 
-## Laravel Sponsors
+**Indexes:**
+- `idx_product_name`: Tối ưu tìm kiếm theo tên
+- `idx_product_brand`: Tối ưu lọc theo thương hiệu
+- `idx_product_status`: Tối ưu lọc theo trạng thái
+- `idx_product_price`: Tối ưu sắp xếp/lọc theo giá
+- `idx_product_search`: FULLTEXT index cho tìm kiếm full-text trên name và brand
+- `vendor_id`: Index tự động từ `foreignId()` (hỗ trợ join và foreign key lookup)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Foreign Keys:**
+- `vendor_id` → `vendors(id)`: Mỗi sản phẩm thuộc về một nhà bán
+  - `ON DELETE SET NULL`: Khi xóa nhà bán, sản phẩm vẫn tồn tại nhưng vendor_id = NULL
+  - Foreign key tự động tạo index cho cột `vendor_id`
 
-### Premium Partners
+**Lý do thiết kế:**
+- Specs dùng JSON để linh hoạt với nhiều loại sản phẩm khác nhau (không cần thêm bảng riêng)
+- FULLTEXT index cho phép tìm kiếm nhanh theo tên và thương hiệu
+- Index trên price hỗ trợ sắp xếp và lọc giá nhanh
+- Foreign key đảm bảo tính toàn vẹn dữ liệu
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+#### 3. Bảng `rfqs` (Request for Quotation - Yêu cầu báo giá)
 
-## Contributing
+**Các trường:**
+- `id`: Primary key tự động tăng
+- `product_id`: Foreign key đến products (NOT NULL)
+- `vendor_id`: Foreign key đến vendors (NOT NULL)
+- `quantity`: Số lượng yêu cầu
+- `status`: Trạng thái (pending/accepted/rejected)
+- `created_at`, `updated_at`: Timestamps
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Indexes:**
+- `idx_rfq_status`: Tối ưu lọc theo trạng thái RFQ
+- `idx_rfq_created`: Tối ưu sắp xếp theo thời gian tạo
+- `product_id`: Index tự động từ `foreignId()` (hỗ trợ join và foreign key lookup)
+- `vendor_id`: Index tự động từ `foreignId()` (hỗ trợ join và foreign key lookup)
 
-## Code of Conduct
+**Foreign Keys:**
+- `product_id` → `products(id)`: RFQ liên quan đến sản phẩm cụ thể
+  - `ON DELETE CASCADE`: Xóa sản phẩm thì xóa luôn RFQ liên quan
+  - Foreign key tự động tạo index cho cột `product_id`
+- `vendor_id` → `vendors(id)`: RFQ gửi đến nhà bán cụ thể
+  - `ON DELETE CASCADE`: Xóa nhà bán thì xóa luôn RFQ liên quan
+  - Foreign key tự động tạo index cho cột `vendor_id`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Lý do thiết kế:**
+- Foreign keys đảm bảo tính toàn vẹn: không thể tạo RFQ cho sản phẩm/nhà bán không tồn tại
+- CASCADE delete phù hợp vì RFQ không có ý nghĩa khi sản phẩm/nhà bán đã bị xóa
+- Index trên status giúp truy vấn RFQ đang pending nhanh
+- Index trên created_at hỗ trợ sắp xếp theo thời gian
 
-## Security Vulnerabilities
+### Tối ưu hóa Performance
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Indexing Strategy:**
+   - Index trên các cột thường dùng để filter (status, brand, verified)
+   - Index trên các cột thường dùng để sort (price, created_at)
+   - FULLTEXT index cho tìm kiếm sản phẩm
+   - **Lưu ý:** 
+     - `->unique()` tự động tạo unique index (không cần thêm index riêng)
+     - `foreignId()` tự động tạo index cho foreign key (không cần thêm index riêng)
+     - Tránh tạo index trùng lặp để tối ưu hiệu suất và tránh lỗi migration
 
-## License
+2. **Foreign Key Constraints:**
+   - Đảm bảo tính toàn vẹn dữ liệu
+   - ON DELETE CASCADE/SET NULL phù hợp với business logic
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. **Data Types:**
+   - DECIMAL cho price (chính xác, không mất mát)
+   - JSON cho specs (linh hoạt, không cần schema cố định)
+   - ENUM cho status (rõ ràng, hiệu quả)
+
+### Mock Data
+
+File `database/mock_data.json` chứa dữ liệu mẫu:
+- 3 vendors (nhà bán)
+- 5 products (sản phẩm)
+- 2 RFQs (yêu cầu báo giá)
+
+Có thể import dữ liệu này để test và phát triển ứng dụng.
+
+### Cách sử dụng
+
+#### Sử dụng Laravel Migrations (Khuyến nghị)
+
+1. **Chạy migrations để tạo bảng:**
+   ```bash
+   php artisan migrate
+   ```
+   Lệnh này sẽ tạo 3 bảng theo thứ tự:
+   - `vendors` (2024_01_20_000001)
+   - `products` (2024_01_20_000002)
+   - `rfqs` (2024_01_20_000003)
+
+2. **Seed mock data:**
+   ```bash
+   php artisan db:seed --class=B2BSeeder
+   ```
+   Hoặc chạy tất cả seeders:
+   ```bash
+   php artisan db:seed
+   ```
+
+3. **Rollback migrations (nếu cần):**
+   ```bash
+   php artisan migrate:rollback --step=3
+   ```

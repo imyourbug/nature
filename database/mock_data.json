@@ -1,0 +1,121 @@
+{
+    "vendors": [
+        {
+            "id": 1,
+            "name": "Công ty TNHH Thương mại ABC",
+            "email": "contact@abc-trading.com",
+            "status": "active",
+            "verified": true
+        },
+        {
+            "id": 2,
+            "name": "Doanh nghiệp XYZ Việt Nam",
+            "email": "info@xyz-vietnam.com",
+            "status": "active",
+            "verified": true
+        },
+        {
+            "id": 3,
+            "name": "Nhà phân phối DEF",
+            "email": "sales@def-distributor.com",
+            "status": "active",
+            "verified": false
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "Laptop Dell XPS 15",
+            "brand": "Dell",
+            "price": 35000000,
+            "specs": {
+                "processor": "Intel Core i7-12700H",
+                "ram": "16GB DDR4",
+                "storage": "512GB SSD",
+                "screen": "15.6 inch FHD",
+                "graphics": "NVIDIA RTX 3050"
+            },
+            "status": "active",
+            "vendor_id": 1
+        },
+        {
+            "id": 2,
+            "name": "Máy in Canon PIXMA G3010",
+            "brand": "Canon",
+            "price": 4500000,
+            "specs": {
+                "type": "Inkjet",
+                "color": "Color",
+                "connectivity": "USB, WiFi",
+                "paper_size": "A4",
+                "ink_system": "Continuous Ink Supply"
+            },
+            "status": "active",
+            "vendor_id": 1
+        },
+        {
+            "id": 3,
+            "name": "Màn hình LG UltraWide 34 inch",
+            "brand": "LG",
+            "price": 12000000,
+            "specs": {
+                "size": "34 inch",
+                "resolution": "3440x1440",
+                "panel": "IPS",
+                "refresh_rate": "75Hz",
+                "connectivity": "HDMI, DisplayPort, USB-C"
+            },
+            "status": "active",
+            "vendor_id": 2
+        },
+        {
+            "id": 4,
+            "name": "Bàn phím cơ Logitech MX Mechanical",
+            "brand": "Logitech",
+            "price": 3500000,
+            "specs": {
+                "switch_type": "Tactile",
+                "layout": "Full-size",
+                "connectivity": "Bluetooth, USB",
+                "backlight": "RGB",
+                "battery": "Rechargeable"
+            },
+            "status": "active",
+            "vendor_id": 2
+        },
+        {
+            "id": 5,
+            "name": "Chuột không dây Microsoft Surface Precision",
+            "brand": "Microsoft",
+            "price": 2500000,
+            "specs": {
+                "connectivity": "Bluetooth",
+                "dpi": "3200",
+                "battery": "Rechargeable",
+                "buttons": "6",
+                "compatibility": "Windows, Mac"
+            },
+            "status": "out_of_stock",
+            "vendor_id": 3
+        }
+    ],
+    "rfqs": [
+        {
+            "id": 1,
+            "product_id": 1,
+            "vendor_id": 1,
+            "quantity": 50,
+            "status": "pending",
+            "created_at": "2024-01-15T10:30:00Z"
+        },
+        {
+            "id": 2,
+            "product_id": 3,
+            "vendor_id": 2,
+            "quantity": 20,
+            "status": "accepted",
+            "created_at": "2024-01-10T14:20:00Z"
+        }
+    ]
+}
+

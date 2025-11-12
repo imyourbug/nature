@@ -18,5 +18,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        // Seed B2B marketplace data
+        $this->call([
+            B2BSeeder::class,
+        ]);
     }
 }
