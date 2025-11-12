@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RFQController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+# products
+Route::prefix('products')->group(function () {
+    // Get products
+    Route::get('/', [ProductController::class, 'index']);
+    // Create product
+    Route::post('/', [ProductController::class, 'store'])->middleware('jwt.auth');
+});
+
+# rfqs
+Route::prefix('rfqs')->group(function () {
+    // Get rfqs
+    Route::get('/', [RFQController::class, 'index']);
+    // Create rfq
+    Route::post('/', [RFQController::class, 'store'])->middleware('jwt.auth');
+    // Accept rfq
+    Route::put('/{id}/accept', [RFQController::class, 'accept'])->middleware('jwt.auth');
 });

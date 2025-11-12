@@ -27,4 +27,27 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
+     */
+    public function render($request, Throwable $exception)
+    {
+        // Handle custom exceptions
+        if (
+            $exception instanceof BadRequestException ||
+            $exception instanceof UnauthorizedException ||
+            $exception instanceof NotFoundException
+        ) {
+            return $exception->render($request);
+        }
+
+        return parent::render($request, $exception);
+    }
 }
