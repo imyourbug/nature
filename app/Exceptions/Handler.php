@@ -3,8 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
-
 class Handler extends ExceptionHandler
 {
     /**
@@ -43,8 +43,15 @@ class Handler extends ExceptionHandler
         if (
             $exception instanceof BadRequestException ||
             $exception instanceof UnauthorizedException ||
-            $exception instanceof NotFoundException
+            $exception instanceof NotFoundException ||
+            $exception instanceof InputInvalidException
         ) {
+            Log::error($exception->getMessage(), [
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
             return $exception->render($request);
         }
 

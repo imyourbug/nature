@@ -39,23 +39,26 @@ class RFQController extends Controller
      * @param CreateRFQRequest $request
      *
      * @return JsonResponse
-     *
-     * @throws NotFoundException|BadRequestException
      */
     public function store(CreateRFQRequest $request): JsonResponse
     {
-        $product = Product::find($request->input('product_id'));
-        $vendorId = $product->vendor_id;
+        $validated = $request->validated();
 
-        if (!$vendorId) {
+        // Get product to determine vendor_id
+        $product = Product::find($validated['product_id']);
+
+        if (!$product) {
+            throw new NotFoundException('Sản phẩm không tồn tại');
+        }
+
+        // Set vendor_id from product
+        $validated['vendor_id'] = $product->vendor_id;
+
+        if (!$validated['vendor_id']) {
             throw new BadRequestException('Sản phẩm chưa có nhà bán');
         }
 
-        $rfq = RFQ::create([
-            'product_id' => $request->input('product_id'),
-            'vendor_id' => $vendorId,
-            'quantity' => $request->input('quantity'),
-        ]);
+        $rfq = RFQ::create($validated);
 
         return $this->respondSuccess(
             $rfq->load(['product', 'vendor']),
@@ -65,17 +68,15 @@ class RFQController extends Controller
     }
 
     /**
-     * Accept a RFQ.
+     * Accept an RFQ.
      *
      * @param int $id
      *
      * @return JsonResponse
-     *
-     * @throws NotFoundException|BadRequestException
      */
     public function accept(int $id): JsonResponse
     {
-        $rfq = RFQ::find($id);
+        $rfq = RFQ::with(['product', 'vendor'])->find($id);
 
         if (!$rfq) {
             throw new NotFoundException('RFQ không tồn tại');
@@ -88,7 +89,7 @@ class RFQController extends Controller
         $rfq->update(['status' => GlobalConstant::RFQ_STATUS_ACCEPTED]);
 
         return $this->respondSuccess(
-            $rfq->refresh(),
+            $rfq->fresh(['product', 'vendor']),
             'RFQ đã được chấp nhận thành công'
         );
     }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
@@ -32,28 +31,5 @@ class Controller extends BaseController
         );
 
         return response()->json($payload, $status);
-    }
-
-    /**
-     * Build a standardized JSON response with pagination meta.
-     *
-     * @param LengthAwarePaginator $paginator
-     * @param string|null $message
-     * @param int $status
-     *
-     * @return JsonResponse
-     */
-    protected function respondWithPagination(LengthAwarePaginator $paginator, ?string $message = null, int $status = 200): JsonResponse
-    {
-        $pagination = [
-            'pagination' => [
-                'current_page' => $paginator->currentPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-                'last_page' => $paginator->lastPage(),
-            ],
-        ];
-
-        return $this->respondSuccess($paginator->items(), $message, $status, $pagination);
     }
 }

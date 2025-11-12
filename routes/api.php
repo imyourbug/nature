@@ -21,6 +21,8 @@ Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     // Create product
     Route::post('/', [ProductController::class, 'store'])->middleware('jwt.auth');
+    // Get product by id
+    Route::get('/{id}', [ProductController::class, 'show']);
 });
 
 # rfqs
